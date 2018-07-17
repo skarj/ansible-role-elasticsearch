@@ -57,4 +57,4 @@ MIT
 Author Information
 ------------------
 
-Sergey Baranov <skaarj.sergey@gmail.co>
+Sergey Baranov <skaarj.sergey@gmail.com>
