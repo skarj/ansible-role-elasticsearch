@@ -1,0 +1,29 @@
+---
+
+- name: Converge
+  hosts: all
+  roles:
+    - role: ansible-role-elasticsearch
+
+      elasticsearch_instance_name: es_test_node1
+      elasticsearch:
+
+        jvm:
+          heap_size: "1g"
+
+        config:
+          path:
+            data: /opt/elk/elasticsearch
+            repo: /opt/elk/elasticsearch/backups
+          network:
+            host: "0.0.0.0"
+          cluster:
+            name: "elktestcluster01"
+          discovery:
+            zen:
+              ping:
+                unicast:
+                  hosts: false
+          node:
+            data: true
+            master: true

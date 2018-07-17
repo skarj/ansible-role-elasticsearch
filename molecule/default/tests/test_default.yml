@@ -1,0 +1,16 @@
+---
+
+service:
+  elasticsearch:
+    enabled: true
+    running: true
+
+port:
+  tcp6:9200:
+    listening: true
+    ip:
+      - "::"
+
+process:
+  java:
+    running: true

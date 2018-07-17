@@ -1,0 +1,56 @@
+---
+
+- name: ensure elasticsearch directories are exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ elasticsearch.user }}"
+    group: "{{ elasticsearch.group }}"
+  with_items:
+    - "{{ elasticsearch.config.path.logs }}"
+    - "{{ elasticsearch.config.path.data }}"
+
+- name: deliver elasticsearch configuration
+  copy:
+    content: "{{ elasticsearch.config | to_nice_yaml }}"
+    dest: "/etc/elasticsearch/elasticsearch.yml"
+    owner: "{{ elasticsearch.user }}"
+    group: "{{ elasticsearch.group }}"
+    mode: 0644
+    backup: true
+  notify:
+    - elasticsearch restart
+    - elasticsearch service status
+    - elasticsearch health check
+    - elasticsearch health check message
+
+- name: set JVM heap size
+  lineinfile:
+    dest: "/etc/elasticsearch/jvm.options"
+    regexp: '^-{{ item }}.*'
+    line: '-{{ item }}{{ elasticsearch.jvm.heap_size }}'
+  with_items:
+    - Xmx
+    - Xms
+  notify:
+    - elasticsearch restart
+    - elasticsearch service status
+    - elasticsearch health check
+    - elasticsearch health check message
+
+- name: add custom JVM options
+  blockinfile:
+    dest: "/etc/elasticsearch/jvm.options"
+    content: "{{ lookup('template', 'templates/jvm.options.j2') }}"
+    state: present
+  notify:
+    - elasticsearch restart
+    - elasticsearch service status
+    - elasticsearch health check
+    - elasticsearch health check message
+
+- import_tasks: memlock.yml
+  when:
+    - elasticsearch.config.bootstrap is defined
+    - elasticsearch.config.bootstrap.memory_lock is defined
+    - elasticsearch.config.bootstrap.memory_lock

@@ -1,0 +1,5 @@
+{% if elasticsearch.jvm.options !='' %}
+{% for item in elasticsearch.jvm.options %}
+{{ item }}
+{% endfor %}
+{% endif %}

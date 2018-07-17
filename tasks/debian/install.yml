@@ -1,0 +1,57 @@
+---
+
+- name: get information about installed elasticsearch package
+  shell: dpkg -s elasticsearch | grep "Version:"
+  changed_when: false
+  failed_when: false
+  register: dpkg_info
+  args:
+    warn: false
+  check_mode: false
+
+- name: get version of installed elasticsearch package
+  set_fact:
+    installed_package_version: "{{ dpkg_info.stdout | regex_search('(\\d\\.\\d\\.\\d)') }}"
+  check_mode: false
+  when:
+    - dpkg_info is defined
+    - dpkg_info.stdout_lines | list | length > 0
+
+- name: show elasticsearch version
+  debug:
+    msg: "{% if installed_package_version is defined %}Current: {{ installed_package_version }} {% endif %}Install: {{ elasticsearch.version }}"
+
+- name: get information about version locks
+  command: dpkg --get-selections elasticsearch
+  changed_when: false
+  register: dpkg_hold
+  args:
+    warn: false
+  check_mode: false
+  when: elasticsearch.pin_version
+
+- name: remove version lock for elasticsearch
+  dpkg_selections:
+    name: elasticsearch
+    selection: install
+  when:
+    - elasticsearch.pin_version
+    - "'hold' in dpkg_hold.stdout"
+    - installed_package_version is defined
+    - installed_package_version is version(elasticsearch.version, '<>')
+  notify: elasticsearch hold version
+
+- name: install elasticsearch
+  package:
+    name: "elasticsearch={{ elasticsearch.version }}*"
+    update_cache: true
+  notify: elasticsearch hold version
+
+- name: pin elasticsearch version
+  debug:
+    msg: "Pin elasticsearch version"
+  changed_when: true
+  when:
+    - elasticsearch.pin_version
+    - "not 'hold' in dpkg_hold.stdout"
+  notify: elasticsearch hold version

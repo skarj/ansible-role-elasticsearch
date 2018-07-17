@@ -1,0 +1,14 @@
+---
+
+- name: fail if elasticsearch_instance_name is not specified
+  fail:
+    msg: "elasticsearch_instance_name must be specified and cannot be blank"
+  when: elasticsearch_instance_name is not defined or elasticsearch_instance_name == ''
+
+- name: prepare redhat host
+  import_tasks: redhat/prepare.yml
+  when: (ansible_os_family | lower == "redhat")
+
+- name: prepare debian host
+  import_tasks: debian/prepare.yml
+  when: (ansible_os_family | lower == "debian")

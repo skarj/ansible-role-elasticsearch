@@ -1,0 +1,27 @@
+---
+
+elasticsearch:
+
+  # Version of the elasticsearch server
+  version: "6.3.1"
+
+  # Lock/hold elasticsearch version
+  pin_version: true
+
+  user: elasticsearch
+  group: elasticsearch
+
+  jvm:
+    heap_size: 2g
+    # additional java options
+    options: []
+
+  # settings for elasticsearch.yml configuration file
+  config:
+    path:
+      data: /var/lib/elasticsearch
+      logs: /var/log/elasticsearch
+    cluster:
+      name: elasticsearch
+    node:
+      name: "{{ inventory_hostname.split('.')[0] }}-{{ elasticsearch_instance_name }}"

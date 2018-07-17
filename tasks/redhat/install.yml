@@ -1,0 +1,56 @@
+---
+
+- name: get information about installed elasticsearch package
+  yum:
+    list: elasticsearch
+  check_mode: false
+  register: yum_list
+
+- name: get version of installed elasticsearch package
+  set_fact:
+    installed_package_version: "{{ yum_list.results | selectattr('yumstate','equalto','installed') | map(attribute='version') | first }}"
+  check_mode: false
+  when: yum_list.results | selectattr('yumstate','equalto','installed') | list | length > 0
+
+- name: get information about version locks
+  command: yum versionlock list
+  changed_when: false
+  register: yum_lock
+  args:
+    warn: false
+  check_mode: false
+  when: elasticsearch.pin_version
+
+- name: show elasticsearch version
+  debug:
+    msg: "{% if installed_package_version is defined %}Current: {{ installed_package_version }} {% endif %}Install: {{ elasticsearch.version }}"
+
+- name: remove version lock for elasticsearch
+  command: yum versionlock delete elasticsearch
+  args:
+    warn: false
+  when:
+    - "'elasticsearch' in yum_lock.stdout"
+    - elasticsearch.pin_version
+    - installed_package_version is defined
+    - installed_package_version is version(elasticsearch.version, '<>')
+  notify: elasticsearch lock version
+
+- name: install elasticsearch
+  yum:
+    name: elasticsearch-{{ elasticsearch.version }}
+    update_cache: true
+    allow_downgrade: true
+  notify:
+    - systemd daemon reload
+    - elasticsearch restart
+    - elasticsearch lock version
+
+- name: lock elasticsearch version
+  debug:
+    msg: "Pin elasticsearch version"
+  changed_when: true
+  when:
+    - elasticsearch.pin_version
+    - "not 'elasticsearch' in yum_lock.stdout"
+  notify: elasticsearch lock version
