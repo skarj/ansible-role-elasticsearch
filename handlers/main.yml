@@ -13,14 +13,14 @@
 
 - name: elasticsearch service status
   wait_for:
-    host: "{{ elasticsearch.config.network.bind_host | default('127.0.0.1') }}"
-    port: "{{ elasticsearch.config.http.port | default('9200') }}"
+    host: "{{ elasticsearch.config.network.bind_host }}"
+    port: "{{ elasticsearch.config.http.port }}"
     delay: 30
     timeout: 30
 
 - name: elasticsearch health check
   uri:
-    url: http://{{ elasticsearch.config.network.bind_host | default('127.0.0.1') }}:{{ elasticsearch.config.http.port | default('9200') }}/_cluster/health?pretty
+    url: http://{{ elasticsearch.config.network.bind_host }}:{{ elasticsearch.config.http.port }}/_cluster/health?pretty
     method: GET
     return_content: true
     timeout: 120

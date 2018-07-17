@@ -21,6 +21,10 @@ elasticsearch:
     path:
       data: /var/lib/elasticsearch
       logs: /var/log/elasticsearch
+    network:
+      bind_host: "0.0.0.0"
+    http:
+      port: 9200
     cluster:
       name: elasticsearch
     node:

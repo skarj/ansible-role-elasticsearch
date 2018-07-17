@@ -15,8 +15,6 @@
           path:
             data: /opt/elk/elasticsearch
             repo: /opt/elk/elasticsearch/backups
-          network:
-            host: "0.0.0.0"
           cluster:
             name: "elktestcluster01"
           discovery:
