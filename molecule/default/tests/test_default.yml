@@ -6,10 +6,10 @@ service:
     running: true
 
 port:
-  tcp6:9200:
+  tcp:9200:
     listening: true
     ip:
-      - "::"
+      - "0.0.0.0"
 
 process:
   java:
