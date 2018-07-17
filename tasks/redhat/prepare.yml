@@ -1,5 +1,14 @@
 ---
 
+- name: ensure dependencies are installed
+  package:
+    name:
+      - curl
+      - yum-utils
+      - libselinux-python
+      - policycoreutils-python
+      - java-1.8.0-openjdk.x86_64
+
 - name: ensure Elastic repository is present
   yum_repository:
     name: "elastic-{{ elasticsearch.version.split('.')[:1] | join('.') }}.x"
@@ -8,16 +17,10 @@
     baseurl: "https://artifacts.elastic.co/packages/{{ elasticsearch.version.split('.')[:1] | join('.') }}.x/yum"
     gpgkey: "http://packages.elastic.co/GPG-KEY-elasticsearch"
     gpgcheck: true
-    enabled: true
     sslverify: true
     sslcacert: /etc/pki/tls/certs/ca-bundle.crt
 
-- name: ensure dependencies are installed
+- name: ensure yum-plugin-versionlock is installed
   package:
-    name:
-      - curl
-      - yum-utils
-      - libselinux-python
-      - policycoreutils-python
-      - yum-plugin-versionlock
-      - java-1.8.0-openjdk.x86_64
+    name: yum-plugin-versionlock
+  when: elasticsearch.pin_version
