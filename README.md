@@ -38,7 +38,7 @@ An example of how to use this role:
 
         - hosts: all
           roles:
-            - role: elasticsearch
+            - role: ansible-role-elasticsearch
               elasticsearch:
                 instance_name: node1
                 jvm:
