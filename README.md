@@ -28,7 +28,7 @@ Structure of section *elasticsearch.config* repeats *elasticsearch.yml*, you can
   * _elasticsearch.instance_name_ unique instance name - mandatory variable!
 
   * _elasticsearch.jvm.heap_size_ heap size of java memory, see about
-[Heap: Sizing and Swapping](https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html)
+[setting heap size](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html)
 
 
 Example Playbook
