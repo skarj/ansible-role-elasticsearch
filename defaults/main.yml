@@ -3,7 +3,7 @@
 elasticsearch:
 
   # Version of the elasticsearch server
-  version: "6.5.2"
+  version: "6.6.0"
 
   # Lock/hold elasticsearch version
   pin_version: true
